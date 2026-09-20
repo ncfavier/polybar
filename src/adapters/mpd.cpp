@@ -81,8 +81,18 @@ namespace mpd {
 
   string mpdsong::get_artist() {
     assert(m_song);
-    auto tag = mpd_song_get_tag(m_song.get(), MPD_TAG_ARTIST, 0);
-    return string{tag != nullptr ? tag : ""};
+    std::string artists = "";
+
+    for (int i = 0;; ++i) {
+      auto tag = mpd_song_get_tag(m_song.get(), MPD_TAG_ARTIST, i);
+      if (tag == nullptr)
+        break;
+
+      if (i > 0) artists += ", ";
+      artists += tag;
+    }
+
+    return artists;
   }
 
   string mpdsong::get_album_artist() {
